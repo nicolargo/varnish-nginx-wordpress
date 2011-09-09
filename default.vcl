@@ -205,23 +205,6 @@ sub vcl_deliver {
 	return (deliver);
 }
  
-sub vcl_error {
-	if (obj.status == 700) {
-		# Include a general error message handler for debugging purposes
-		include "/usr/local/etc/varnish/conf.d/_error.vcl";
-
-	} elseif (obj.status == 701) {
-		# Redirect error handler
-		set obj.http.Location = "http://" + obj.response + req.url;
-		# Change this to 302 if you want temporary redirects
-		set obj.status = 301;
-		return (deliver);
-
-	}
-
-     	return (deliver);
-}
- 
 sub vcl_init {
  	return (ok);
 }
