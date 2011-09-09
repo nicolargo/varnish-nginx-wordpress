@@ -1,3 +1,5 @@
-Simple configurations templates for speed up Wordpress blog with:
-- Varnish 3
+Simple configurations templates to optimize Wordpress blog:
+- Varnish (version 3.0 or higher)
 - Nginx
+- Wordpress with "W3 Total Cache" and "Varnish HTTP Purge" plugins
+
