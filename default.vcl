@@ -24,9 +24,10 @@ acl purge {
 }
 
 # This function is used when a request is send by a HTTP client (Browser) 
+# !!! Replace: blog.nicolargo.com by your own URL !!!
 sub vcl_recv {
 	# Only cache the following site
-	if (req.http.host ~ "(blogtest.nicolargo.com)") { 
+	if (req.http.host ~ "(blog.nicolargo.com)") { 
 		set req.backend = default; 
 	} else { 
 		return (pass); 
@@ -60,13 +61,7 @@ sub vcl_recv {
 	}
 
 	# --- Wordpress specific configuration
-	
-	# Did not cache the home page
-	# Indead comments number are not refresh
-	if (req.url == "/") {
-		return (pass);
-	}
-	
+		
 	# Did not cache the admin and login pages
 	if (req.url ~ "/wp-(login|admin)") {
 		return (pass);
