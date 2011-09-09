@@ -61,9 +61,15 @@ sub vcl_recv {
 
 	# --- Wordpress specific configuration
 	
+	# Did not cache the home page
+	# Indead comments number are not refresh
+	if (req.url == "/") {
+		return (pass);
+	}
+	
 	# Did not cache the admin and login pages
 	if (req.url ~ "/wp-(login|admin)") {
-		    return (pass);
+		return (pass);
 	}
 
 	# Remove the "has_js" cookie
