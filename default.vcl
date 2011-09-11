@@ -61,6 +61,11 @@ sub vcl_recv {
 	}
 
 	# --- Wordpress specific configuration
+
+    # Did not cache the RSS feed
+    if (req.url ~ "/feed") {
+        return (pass);
+    }
 		
 	# Did not cache the admin and login pages
 	if (req.url ~ "/wp-(login|admin)") {
