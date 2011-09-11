@@ -11,3 +11,5 @@ Simple configurations templates to optimize Wordpress blog with the following st
 
 Feel free to fork !
 
+The source post is here: http://blog.nicolargo.com/2011/09/configuration-varnishnginx-pour-wordpress.html
+
