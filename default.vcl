@@ -16,6 +16,11 @@ backend default {
 	.first_byte_timeout = 300s;
 }
 
+# Forbidden IP ACL
+acl forbidden {
+	"41.194.61.2"/32;
+}
+
 # Purge ACL
 acl purge {
 	# Only localhost can purge my cache
@@ -24,10 +29,15 @@ acl purge {
 }
 
 # This function is used when a request is send by a HTTP client (Browser) 
-# !!! Replace: blog.nicolargo.com by your own URL !!!
 sub vcl_recv {
-	# Only cache the following site
-	if (req.http.host ~ "(blog.nicolargo.com)") { 
+	# Block the forbidden IP addresse
+	if (client.ip ~ forbidden) {
+        	error 403 "Forbidden";
+	}
+
+	# Only cache the following sites
+	#if ((req.http.host ~ "(blog.nicolargo.com)") || (req.http.host ~ "(blogtest.nicolargo.com)")) { 
+	if ((req.http.host ~ "(blog.nicolargo.com)")) { 
 		set req.backend = default; 
 	} else { 
 		return (pass); 
@@ -61,12 +71,18 @@ sub vcl_recv {
 	}
 
 	# --- Wordpress specific configuration
+	
+	# Did not cache the RSS feed
+	if (req.url ~ "/feed") {
+		return (pass);
+	}
 
-    # Did not cache the RSS feed
-    if (req.url ~ "/feed") {
-        return (pass);
-    }
-		
+	# Blitz hack
+        if (req.url ~ "/mu-.*") {
+                return (pass);
+        }
+
+	
 	# Did not cache the admin and login pages
 	if (req.url ~ "/wp-(login|admin)") {
 		return (pass);
@@ -96,7 +112,7 @@ sub vcl_recv {
 	}
 	
 	# Cache the following files extensions 
-	if (req.url ~ "\.(css|js|png|gif|jp(e)?g)") {
+	if (req.url ~ "\.(css|js|png|gif|jp(e)?g|swf|ico)") {
 		unset req.http.cookie;
 	}
 
@@ -182,8 +198,8 @@ sub vcl_miss {
 
 # This function is used when a request is sent by our backend (Nginx server)
 sub vcl_fetch {
-	# For static content related to the theme, strip all backend cookies
-	if (req.url ~ "\.(css|js|png|gif|jp(e?)g)") {
+	# For static content strip all backend cookies
+	if (req.url ~ "\.(css|js|png|gif|jp(e?)g)|swf|ico") {
 		unset beresp.http.cookie;
 	}
 
