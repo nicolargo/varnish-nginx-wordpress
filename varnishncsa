@@ -1,0 +1,8 @@
+# Configuration file for varnishncsa
+#
+# Uncomment this to enable logging for varnish.  Please make sure you have
+# enough disk space for significant amounts of log data.  To disable logging,
+# set the variable to "0", "no", or leave it unset.
+#
+# NCSA log format, to be used by HTTP log analyzers
+VARNISHNCSA_ENABLED=1
