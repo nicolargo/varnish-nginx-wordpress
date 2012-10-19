@@ -18,8 +18,7 @@ backend default {
 
 # Forbidden IP ACL
 acl forbidden {
-	"41.194.61.2"/32;
-	"192.54.144.229"/32;
+	# "41.194.61.2"/32;
 }
 
 # Purge ACL
