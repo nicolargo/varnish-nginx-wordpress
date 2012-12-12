@@ -1,15 +1,15 @@
 [![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=nicolargo&url=https://github.com/nicolargo/varnish-nginx-wordpress&title=varnish-nginx-wordpress&language=en_GB&tags=github&category=rest) 
 
-Configurations files
-====================
+I serve my [blog](http://blog.nicolargo.com/2011/09/configuration-varnishnginx-pour-wordpress.html) with the following WebStack:
 
-Simple configurations templates to optimize Wordpress blog with the following stack:
-
-- Varnish (version 3.0 or higher)
+- Debian GNU/Linux (what else)
+    > See my sysctl.conf file
 - Nginx
-- Wordpress with the "Varnish HTTP Purge" plugins
+    > See my NGinx conf
+- PHP-FPM / APC
+    > See my PHP configration
+- Varnish
+    > See mu Varnish configuration
+- Wordpress with the "WP Super Cache" and "Varnish HTTP Purge" plugins
 
 Feel free to fork !
-
-The source post is here: http://blog.nicolargo.com/2011/09/configuration-varnishnginx-pour-wordpress.html
-

@@ -26,6 +26,7 @@ acl purge {
 	# Only localhost can purge my cache
 	"127.0.0.1";
 	"localhost";
+	"88.190.27.139";
 }
 
 # This function is used when a request is send by a HTTP client (Browser) 
@@ -50,7 +51,7 @@ sub vcl_recv {
 	 	} else {
 			set req.http.X-Forwarded-For = client.ip;
 	 	}
-     }
+     	}
 
 	# Normalize the header, remove the port (in case you're testing this on various TCP ports)
 	set req.http.Host = regsub(req.http.Host, ":[0-9]+", "");
@@ -66,7 +67,7 @@ sub vcl_recv {
 	}
 
 	# Post requests will not be cached
-	if (req.request == "POST") {
+	if (req.http.Authorization || req.request == "POST") {
 		return (pass);
 	}
 
@@ -146,6 +147,9 @@ sub vcl_recv {
 		# Not cacheable by default
 		return (pass);
 	}
+
+	# Define the default grace period to serve cached content
+	set req.grace = 30s;
 	
 	# Cache all others requests
 	return (lookup);
@@ -198,13 +202,37 @@ sub vcl_miss {
 
 # This function is used when a request is sent by our backend (Nginx server)
 sub vcl_fetch {
+	# Remove some headers we never want to see
+	unset beresp.http.Server;
+	unset beresp.http.X-Powered-By;
+
 	# For static content strip all backend cookies
 	if (req.url ~ "\.(css|js|png|gif|jp(e?)g)|swf|ico") {
 		unset beresp.http.cookie;
 	}
 
-	# A TTL of 30 minutes
-	set beresp.ttl = 1800s;
+	# Only allow cookies to be set if we're in admin area
+	if (beresp.http.Set-Cookie && req.url !~ "^/wp-(login|admin)") {
+        	unset beresp.http.Set-Cookie;
+    	}
+
+	# don't cache response to posted requests or those with basic auth
+	if ( req.request == "POST" || req.http.Authorization ) {
+        	return (hit_for_pass);
+    	}
+ 
+    	# don't cache search results
+	if ( req.url ~ "\?s=" ){
+		return (hit_for_pass);
+	}
+    
+	# only cache status ok
+	if ( beresp.status != 200 ) {
+		return (hit_for_pass);
+	}
+
+	# A TTL of 24h
+	set beresp.ttl = 24h;
 	
 	return (deliver);
 }
@@ -223,6 +251,10 @@ sub vcl_deliver {
 
 	# Remove some headers: Apache version & OS
 	unset resp.http.Server;
+
+	# Remove some heanders: Varnish
+	unset resp.http.Via;
+	unset resp.http.X-Varnish;
 
 	return (deliver);
 }
