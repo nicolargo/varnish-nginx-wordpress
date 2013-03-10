@@ -1,0 +1,28 @@
+server {
+    listen 80;
+
+    server_name www.yourblogname.com;
+    root	/var/www/www.yourblogname.com;
+    index 	index.php index.html index.htm;
+
+    access_log /var/log/nginx/www.yourblogname.access_log;
+    error_log /var/log/nginx/www.yourblogname.error_log;
+
+    # Security
+    include global/security.conf;
+
+    location / {
+        # This is cool because no php is touched for static content. 
+        # include the "?$args" part so non-default permalinks doesn't break when using query string
+        try_files $uri $uri/ /index.php?$args;
+    }
+ 
+	# PHP-FPM
+	include global/php-fpm.conf;
+ 	
+	# STATICS FILES
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+        expires max;
+        log_not_found off;
+    }
+}
