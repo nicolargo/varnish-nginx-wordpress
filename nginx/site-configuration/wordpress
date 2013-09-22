@@ -1,5 +1,5 @@
 server {
-    listen 80;
+    listen 8080;
 
     server_name www.yourblogname.com;
     root	/var/www/www.yourblogname.com;
