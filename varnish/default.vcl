@@ -1,10 +1,3 @@
-#
-# Varnish 3 configuration for Wordpress
-#
-# On Debian OS:  /etc/varnish/default.vcl
-#
-# Nicolas Hennion (aka) Nicolargo
-#
 
 # Set the default backend (Nginx server for me)
 backend default {
@@ -12,13 +5,7 @@ backend default {
 	.host = "127.0.0.1";
 	.port = "8080";
 	# Increase guru timeout
-	# http://vincentfretin.ecreall.com/articles/varnish-guru-meditation-on-timeout
 	.first_byte_timeout = 300s;
-}
-
-# Forbidden IP ACL
-acl forbidden {
-	# "41.194.61.2"/32;
 }
 
 # Purge ACL
@@ -26,7 +13,7 @@ acl purge {
 	# Only localhost can purge my cache
 	"127.0.0.1";
 	"localhost";
-	"88.190.27.139";
+	"94.23.214.15";
 }
 
 # This function is used when a request is send by a HTTP client (Browser) 
@@ -34,14 +21,6 @@ sub vcl_recv {
 	# Block the forbidden IP addresse
 	if (client.ip ~ forbidden) {
         	error 403 "Forbidden";
-	}
-
-	# Only cache the following sites
-	#if ((req.http.host ~ "(blog.nicolargo.com)") || (req.http.host ~ "(blogtest.nicolargo.com)")) { 
-	if ((req.http.host ~ "(blog.nicolargo.com)")) { 
-		set req.backend = default; 
-	} else { 
-		return (pass); 
 	}
 
 	# Compatibility with Apache format log
@@ -113,7 +92,8 @@ sub vcl_recv {
 	}
 	
 	# Cache the following files extensions 
-	if (req.url ~ "\.(css|js|png|gif|jp(e)?g|swf|ico)") {
+	#if (req.url ~ "\.(css|js|png|gif|jp(e)?g|swf|ico)") {
+	if (req.url ~ "\.(asf|asx|wax|wmv|wmx|avi|bmp|class|divx|doc|docx|eot|exe|gif|gz|gzip|ico|jpg|jpeg|jpe|mdb|mid|midi|mov|qt|mp3|m4a|mp4|m4v|mpeg|mpg|mpe|mpp|odb|odc|odf|odg|odp|ods|odt|ogg|ogv|otf|pdf|png|pot|pps|ppt|pptx|ra|ram|svg|svgz|swf|tar|t?gz|tif|tiff|ttf|wav|webm|wma|woff|wri|xla|xls|xlsx|xlt|xlw|zip)") {
 		unset req.http.cookie;
 	}
 
