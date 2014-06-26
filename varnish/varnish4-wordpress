@@ -7,6 +7,7 @@
 #
 # See the VCL chapters in the Users Guide at https://www.varnish-cache.org/docs/
 # and http://varnish-cache.org/trac/wiki/VCLExamples for more examples.
+
 # Update for work with Varnish 4
 
 
@@ -42,7 +43,7 @@ sub vcl_recv {
 			return(synth(405, "This IP is not allowed to send PURGE requests."));
 		}	
 		# If allowed, do a cache_lookup -> vlc_hit() or vlc_miss()
-		return (hash);
+		return (purge);
 	}
 
 	# Post requests will not be cached
@@ -156,26 +157,6 @@ sub vcl_hash {
 	return (lookup);
 }
  
-sub vcl_hit {
-	# Allow purges
-	if (req.method == "PURGE") {
-		purge;
-		return(synth(200, "Purged."));
-	}
-
-	return (deliver);
-}
- 
-sub vcl_miss {
-	# Allow purges
-	if (req.method == "PURGE") {
-		purge;
-		return(synth(200, "Purged."));
-	}
-        
-	return (fetch);
-}
-
 # This function is used when a request is sent by our backend (Nginx server)
 sub vcl_backend_response {
 	# Remove some headers we never want to see
