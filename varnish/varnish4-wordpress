@@ -68,6 +68,12 @@ sub vcl_recv {
 	if (req.url ~ "/wp-(login|admin)") {
 		return (pass);
 	}
+	
+	 # Do not cache the WooCommerce pages
+	 ### REMOVE IT IF YOU DO NOT USE WOOCOMMERCE ###
+	if (req.url ~ "/(cart|my-account|checkout|addons|/?add-to-cart=)") {
+        	return (pass);
+    	}
 
 	# Remove the "has_js" cookie
 	set req.http.Cookie = regsuball(req.http.Cookie, "has_js=[^;]+(; )?", "");
