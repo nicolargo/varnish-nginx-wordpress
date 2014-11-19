@@ -35,6 +35,9 @@ acl purge {
 sub vcl_recv {
 	# Normalize the header, remove the port (in case you're testing this on various TCP ports)
 	set req.http.Host = regsub(req.http.Host, ":[0-9]+", "");
+	
+	# WooCommerce: The code below makes sure the AJAX "add to cart" function works 
+	set req.url = regsub(req.url, "add-to-cart=\d+_\d+&", "");
 
 	# Allow purging from ACL
 	if (req.method == "PURGE") {
