@@ -49,7 +49,7 @@ DAEMON_OPTS="-a :80 \
 	     -p thread_pool_min=200 \
 	     -p thread_pool_max=4000 \
 	     -p cli_timeout=25 \
-	     -p session_linger=50 \
+	     -p timeout_linger=50 \
              -s malloc,512M"
 
 
